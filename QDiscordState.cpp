@@ -260,6 +260,10 @@ void QDiscordState::guildRoleDeleteReceived(QDiscordID roleId, QDiscordID guildI
 
 void QDiscordState::interactionCreateReceived(QSharedPointer<QDiscordInteraction> interaction)
 {
+	if (interaction->channel_id().has_value())
+	{
+		interaction->setChannel(channel(interaction->channel_id().value()));
+	}
 	emit interactionReceived(interaction);
 }
 

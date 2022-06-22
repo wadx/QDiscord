@@ -294,6 +294,9 @@ public:
 	const std::optional<QString>& guild_locale() const { return _guild_locale; }
 	void setGuild_locale(const QString& guild_locale) { _guild_locale = guild_locale; }
 
+	QSharedPointer<QDiscordChannel> channel() const { return _channel; }
+	void setChannel(QSharedPointer<QDiscordChannel> channel) { _channel = channel; }
+
 	template<typename Self, class Action>
 	void map(this Self&& self, Action& a) // c++23
 	{
@@ -327,6 +330,8 @@ private:
 	QSharedPointer<QDiscordMessage>         _message;        // for components, the message they were attached to
 	std::optional<QString>                  _locale;         // the selected language of the invoking user
 	std::optional<QString>                  _guild_locale;   // the guild's preferred locale, if invoked in a guild
+
+	QSharedPointer<QDiscordChannel>         _channel;
 };
 Q_DECLARE_METATYPE(QDiscordInteraction)
 
@@ -344,13 +349,12 @@ public:
 
 	const std::optional<QString>& content() const { return _content; }
 	void setContent(const QString& content) { _content = content; }
+	const QList<QSharedPointer<QDiscordEmbed>>& embeds() const { return _embeds; }
+	void addEmbed(QSharedPointer<QDiscordEmbed> embed) { _embeds.append(embed); }
 	const std::optional<int>& flags() const { return _flags; }
 	void setFlags(int flags) { _flags = flags; }
 	const QList<QSharedPointer<QDiscordMessageComponent>>& components() const { return _components; }
-	void clearComponents() { _components.clear(); }
 	void addComponent(QSharedPointer<QDiscordMessageComponent> component) { _components.append(component); }
-	void setComponents(const QList<QSharedPointer<QDiscordMessageComponent>>& components) { _components = components; }
-
 	const std::optional<QString>& customId() const { return _custom_id; }
 	void setCustomId(const QString& custom_id) { _custom_id = custom_id; }
 	const std::optional<QString>& title() const { return _title; }
@@ -375,7 +379,7 @@ public:
 private:
 	std::optional<bool>                             _tts;              // is the response TTS
 	std::optional<QString>                          _content;          // message content
-	QList<QDiscordEmbed>                            _embeds;           // array of embeds, supports up to 10 embeds
+	QList<QSharedPointer<QDiscordEmbed>>            _embeds;           // array of embeds, supports up to 10 embeds
 	QSharedPointer<QDiscordAllowedMentions>         _allowed_mentions; // allowed mentions object
 	std::optional<int>                              _flags;            // message flags combined as a bitfield (only SUPPRESS_EMBEDS and EPHEMERAL can be set) QDiscordMessage::MessageFlags
 	QList<QSharedPointer<QDiscordMessageComponent>> _components;       // message components

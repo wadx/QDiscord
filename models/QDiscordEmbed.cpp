@@ -31,6 +31,21 @@ QJsonObject QDiscordEmbedFooter::serialize() const
 }
 
 
+QDiscordEmbedFooter::QDiscordEmbedFooter(const QString& text, const QString& icon_url, const QString& proxy_icon_url)
+{
+	QDiscordEmbedAuthor();
+	setText(text);
+	if (!icon_url.isEmpty())
+	{
+		set_icon_url(icon_url);
+	}
+	if (!proxy_icon_url.isEmpty())
+	{
+		set_proxy_icon_url(proxy_icon_url);
+	}
+}
+
+
 QSharedPointer<QDiscordEmbedImage> QDiscordEmbedImage::fromJson(const QJsonObject& object)
 {
 	QSharedPointer<QDiscordEmbedImage> out(new QDiscordEmbedImage());
@@ -57,6 +72,24 @@ QJsonObject QDiscordEmbedImage::serialize() const
 }
 
 
+QDiscordEmbedImage::QDiscordEmbedImage(const QString& url, const QString& proxy_url, int height, int width)
+{
+	setUrl(url);
+	if (!proxy_url.isEmpty())
+	{
+		set_proxy_url(proxy_url);
+	}
+	if (height != 0)
+	{
+		set_height(height);
+	}
+	if (width != 0)
+	{
+		set_width(width);
+	}
+}
+
+
 QSharedPointer<QDiscordEmbedThumbnail> QDiscordEmbedThumbnail::fromJson(const QJsonObject& object)
 {
 	QSharedPointer<QDiscordEmbedThumbnail> out(new QDiscordEmbedThumbnail());
@@ -80,6 +113,24 @@ void QDiscordEmbedThumbnail::deserialize(const QJsonObject& object)
 QJsonObject QDiscordEmbedThumbnail::serialize() const
 {
 	return serializeJson();
+}
+
+
+QDiscordEmbedThumbnail::QDiscordEmbedThumbnail(const QString& url, const QString& proxy_url, int height, int width)
+{
+	setUrl(url);
+	if (!proxy_url.isEmpty())
+	{
+		set_proxy_url(proxy_url);
+	}
+	if (height != 0)
+	{
+		set_height(height);
+	}
+	if (width != 0)
+	{
+		set_width(width);
+	}
 }
 
 
@@ -161,6 +212,25 @@ QJsonObject QDiscordEmbedAuthor::serialize() const
 }
 
 
+QDiscordEmbedAuthor::QDiscordEmbedAuthor(const QString& name, const QString& url, const QString& icon_url, const QString& proxy_icon_url)
+{
+	QDiscordEmbedAuthor();
+	setName(name);
+	if (!url.isEmpty())
+	{
+		set_url(url);
+	}
+	if (!icon_url.isEmpty())
+	{
+		set_icon_url(icon_url);
+	}
+	if (!proxy_icon_url.isEmpty())
+	{
+		set_proxy_icon_url(proxy_icon_url);
+	}
+}
+
+
 QSharedPointer<QDiscordEmbedField> QDiscordEmbedField::fromJson(const QJsonObject& object)
 {
 	QSharedPointer<QDiscordEmbedField> out(new QDiscordEmbedField());
@@ -184,6 +254,18 @@ void QDiscordEmbedField::deserialize(const QJsonObject& object)
 QJsonObject QDiscordEmbedField::serialize() const
 {
 	return serializeJson();
+}
+
+
+QDiscordEmbedField::QDiscordEmbedField(const QString& name, const QString& value, std::optional<bool> inline_)
+{
+	QDiscordEmbedField();
+	setName(name);
+	setValue(value);
+	if (inline_.has_value())
+	{
+		setInline(inline_.value());
+	}
 }
 
 

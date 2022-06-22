@@ -205,7 +205,7 @@ public:
 	QString content() const { return _content; }
 	void setContent(const QString& content) { _content = content; }
 	///\brief Returns the date at which the message was created.
-	QDateTime timestamp() const { return _timestamp; }
+	const QDateTime& timestamp() const { return _timestamp; }
 	void setTimestamp(const QDateTime& timestamp) { _timestamp = timestamp; }
 	std::optional<QDateTime> editedTimestamp() const { return _editedTimestamp; }
 	void setEditedTimestamp(const std::optional<QDateTime>& editedTimestamp) { _editedTimestamp = editedTimestamp; }
@@ -244,9 +244,9 @@ public:
 	QSharedPointer<QDiscordGuild> guild() const;
 
 	const QList<QSharedPointer<QDiscordMessageComponent>>& components() const { return _components; }
-	void clearComponents() { _components.clear(); }
 	void addComponent(QSharedPointer<QDiscordMessageComponent> component) { _components.append(component); }
-	void setComponents(const QList<QSharedPointer<QDiscordMessageComponent>>& components) { _components = components; }
+	const QList<QSharedPointer<QDiscordEmbed>>& embeds() const { return _embeds; }
+	void addEmbed(QSharedPointer<QDiscordEmbed> embed) { _embeds.append(embed); }
 
 	template<typename Self, class Action>
 	void map(this Self&& self, Action& a) // c++23
@@ -268,6 +268,7 @@ public:
 		field(a, self._mention_channels, "_mention_channels");
 		field(a, self._attachments, "attachments");
 		field(a, self._embeds, "embeds");
+		field(a, self._allowed_mentions, "allowed_mentions");
 		field(a, self._reactions, "reactions");
 		field(a, self._pinned, "pinned");
 		field(a, self._webhook_id, "webhook_id");
@@ -286,37 +287,38 @@ public:
 	}
 
 private:
-	QDiscordID                                      _id;
-	QDiscordID                                      _channel_id;
-	std::optional<QDiscordID>                       _guild_id;
-	QSharedPointer<QDiscordUser>                    _author;
-	std::optional<QDiscordMember>                   _member;
-	QString                                         _content;
-	QDateTime                                       _timestamp;
-	std::optional<QDateTime>                        _editedTimestamp;
-	bool                                            _tts = false;
-	bool                                            _mentionEveryone = false;
-	QList<QDiscordUser>                             _mentions;
-	QList<QDiscordRole>                             _mention_roles;
-	QList<QDiscordChannelMention>                   _mention_channels;
-	QList<QSharedPointer<QDiscordAttachment>>       _attachments;
-	QList<QDiscordEmbed>                            _embeds;
-	QList<QDiscordReaction>                         _reactions;
-	QDiscordID                                      _nonce;
-	bool                                            _pinned = false;
-	std::optional<QDiscordID>                       _webhook_id;
-	Type                                            _type = Type::DEFAULT;
-	std::optional<QDiscordMessageActivity>          _activity;
-	std::optional<QDiscordApplication>              _application;
-	std::optional<QDiscordID>                       _application_id;
-	QSharedPointer<QDiscordMessageReference>        _message_reference;
-	std::optional<int>                              _flags; // MessageFlags
-	QSharedPointer<QDiscordMessage>                 _referenced_message;
-	QSharedPointer<QDiscordInteraction>             _interaction;
-	std::optional<QDiscordChannel>                  _thread;
-	QList<QSharedPointer<QDiscordMessageComponent>> _components;
-	QList<QDiscordStickerItem>                      _sticker_items;
-	QList<QDiscordSticker>                          _stickers;
+	QDiscordID                                      _id;                       // [IN] id of the message
+	QDiscordID                                      _channel_id;               // [IN] id of the channel the message was sent in
+	std::optional<QDiscordID>                       _guild_id;                 // [IN] id of the guild the message was sent in
+	QSharedPointer<QDiscordUser>                    _author;                   // [IN] the author of this message (not guaranteed to be a valid user)
+	std::optional<QDiscordMember>                   _member;                   // [IN] member properties for this message's author
+	QString                                         _content;                  // [OUT/IN] Message contents (up to 2000 characters)
+	QDateTime                                       _timestamp;                // [IN] when this message was sent
+	std::optional<QDateTime>                        _editedTimestamp;          // [IN] when this message was edited (or null if never)
+	bool                                            _tts = false;              // [OUT/IN] true if this is a TTS message
+	bool                                            _mentionEveryone = false;  // [IN] whether this message mentions everyone
+	QList<QDiscordUser>                             _mentions;                 // [IN] users specifically mentioned in the message
+	QList<QDiscordRole>                             _mention_roles;            // [IN] roles specifically mentioned in this message
+	QList<QDiscordChannelMention>                   _mention_channels;         // [IN] channels specifically mentioned in this message
+	QList<QSharedPointer<QDiscordAttachment>>       _attachments;              // [OUT/IN] Attachment objects with filename and description. 
+	QList<QSharedPointer<QDiscordEmbed>>            _embeds;                   // [OUT/IN] Embedded rich content (up to 6000 characters)
+	QSharedPointer<QDiscordAllowedMentions>         _allowed_mentions;         // [OUT] Allowed mentions for the message
+	QList<QDiscordReaction>                         _reactions;                // [IN] reactions to the message
+	QDiscordID                                      _nonce;                    // [IN] used for validating a message was sent
+	bool                                            _pinned = false;           // [IN] whether this message is pinned
+	std::optional<QDiscordID>                       _webhook_id;               // [IN] if the message is generated by a webhook, this is the webhook's id
+	Type                                            _type = Type::DEFAULT;     // [OUT/IN] type of message
+	std::optional<QDiscordMessageActivity>          _activity;                 // [IN] sent with Rich Presence-related chat embeds
+	std::optional<QDiscordApplication>              _application;              // [IN] sent with Rich Presence-related chat embeds
+	std::optional<QDiscordID>                       _application_id;           // [IN] if the message is an Interaction or application-owned webhook, this is the id of the application
+	QSharedPointer<QDiscordMessageReference>        _message_reference;        // [OUT/IN] data showing the source of a crosspost, channel follow add, pin, or reply message
+	std::optional<int>                              _flags;                    // [OUT/IN] Message flags combined as a bitfield (only SUPPRESS_EMBEDS can be set) (MessageFlags)
+	QSharedPointer<QDiscordMessage>                 _referenced_message;       // [IN] the message associated with the message_reference
+	QSharedPointer<QDiscordInteraction>             _interaction;              // [OUT/IN] sent if the message is a response to an Interaction
+	std::optional<QDiscordChannel>                  _thread;                   // [IN] the thread that was started from this message, includes thread member object
+	QList<QSharedPointer<QDiscordMessageComponent>> _components;               // [OUT/IN] sent if the message contains components like buttons, action rows, or other interactive components
+	QList<QDiscordStickerItem>                      _sticker_items;            // [IN] sent if the message contains stickers
+	QList<QDiscordSticker>                          _stickers;                 // [IN] [Deprecated] the stickers sent with the message
 
 	QSharedPointer<QDiscordChannel>                 _channel;
 	QList<QByteArray>                               _files;
