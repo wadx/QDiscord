@@ -270,6 +270,9 @@ public:
 	///\brief Returns a string which allows you to mention this channel.
 	QString mention() const { return QString("<#" + _id.toString() + ">"); }
 
+	bool loggingOn() const { return _loggingOn; }
+	void setLoggingOn(bool on) { _loggingOn = on; }
+
 	template<typename Self, class Action>
 	void map(this Self&& self, Action& a) // c++23
 	{
@@ -334,6 +337,7 @@ private:
 
 	QWeakPointer<QDiscordChannel>         _parent;
 	QWeakPointer<QDiscordGuild>           _guild;
+	bool                                  _loggingOn = false;
 };
 Q_DECLARE_METATYPE(QDiscordChannel)
 

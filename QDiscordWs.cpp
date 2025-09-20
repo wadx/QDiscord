@@ -1,4 +1,4 @@
-/*
+﻿/*
  * QDiscord - An unofficial C++ and Qt wrapper for the Discord API.
  * Copyright (C) 2016-2017 george99g
  * Copyright(c) 2022 by wad(wad@inbox.lv)
@@ -45,7 +45,7 @@ QDiscordWs::QDiscordWs(QDiscordAbstractState* state, QObject* parent)
 {
 	connect(&_ws, &QWebSocket::connected, this, &QDiscordWs::wsConnected);
 	connect(&_ws, &QWebSocket::disconnected, this, &QDiscordWs::wsDisconnected);
-	connect(&_ws, static_cast<void (QWebSocket::*)(QAbstractSocket::SocketError)>(&QWebSocket::error), this, &QDiscordWs::wsError);
+	connect(&_ws, static_cast<void (QWebSocket::*)(QAbstractSocket::SocketError)>(&QWebSocket::errorOccurred), this, &QDiscordWs::wsError);
 	connect(&_ws, &QWebSocket::textMessageReceived, this, &QDiscordWs::wsMessage);
 	_heartbeatTimer.stop(); // Being explicit here because timers are finicky
 	_heartbeatTimer.setSingleShot(false);

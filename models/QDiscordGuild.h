@@ -237,6 +237,9 @@ public:
 	const QString& preferred_locale() const { return _preferred_locale; }
 	void setPreferred_locale(const QString& preferred_locale) { _preferred_locale = preferred_locale; }
 
+	bool loggingOn() const { return _loggingOn; }
+	void setLoggingOn(bool on) { _loggingOn = on; }
+
 	template<typename Self, class Action>
 	void map(this Self&& self, Action& a) // c++23
 	{
@@ -351,6 +354,8 @@ private:
 	QList<QDiscordStageInstance>                      _stage_instances;                      // Stage instances in the guild
 	QList<QDiscordGuildScheduledEvent>                _guild_scheduled_events;               // the scheduled events in the guild
 	std::optional<bool>                               _unavailable;                          // for partial guild object
+
+	bool                                              _loggingOn = false;
 };
 Q_DECLARE_METATYPE(QDiscordGuild)
 
